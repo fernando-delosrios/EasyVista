@@ -27,14 +27,16 @@ import {
     StdTestConnectionInput,
 } from '@sailpoint/connector-sdk'
 import { EasyVistaClient } from './easyvista-client'
-import { Account } from './model/account'
 import { Group } from './model/group'
-import { format, parse, parseISO, subDays } from 'date-fns'
+import { format, subDays } from 'date-fns'
 import { AxiosResponse } from 'axios'
-import { CONTRACT_DATES, PROCESSINGWAIT } from './constants'
+import { PROCESSINGWAIT, REQUESTSPERSECOND } from './constants'
+import { buildAccount, processAccountInput, urlToID } from './utils/account-transform'
+import { runWithConcurrency } from './utils/async-pool'
+import { withKeepAlive } from './utils/streaming'
 
 const CREATE_DATE_FORMAT = 'dd/MM/yyyy'
-const READ_DATE_FORMAT = 'yyyy-MM-dd'
+const LIST_CONCURRENCY = REQUESTSPERSECOND
 
 // Connector must be exported as module property named connector
 export const connector = async () => {
@@ -44,50 +46,14 @@ export const connector = async () => {
     // Use the vendor SDK, or implement own client as necessary, to initialize a client
     const client = new EasyVistaClient(config)
 
-    const urlToID = (url: string): string => {
-        const id = url.split('/').pop()
-        return id ? id : ''
-    }
-
-    const buildAccount = async (rawAccount: any): Promise<Account> => {
-        const account = new Account(rawAccount)
-        const response = await client.getGroupMembership(account.identity)
-        account.attributes.GROUPS = response.data.groups.map(urlToID)
-        if (account.attributes.BEGIN_OF_CONTRACT !== '') {
-            const date = parse(account.attributes.BEGIN_OF_CONTRACT as string, READ_DATE_FORMAT, Date.now())
-            if (Date.now() - date.valueOf() > 0) {
-                account.disabled = true
-            }
-            account.attributes.BEGIN_OF_CONTRACT = date.toISOString()
-        }
-        if (account.attributes.END_OF_CONTRACT !== '') {
-            const date = parse(account.attributes.END_OF_CONTRACT as string, READ_DATE_FORMAT, Date.now())
-            account.attributes.END_OF_CONTRACT = date.toISOString()
-        }
-
-        return account
-    }
-
-    const processInput = (input: any): any => {
-        const account = { ...input }
-        for (const date of CONTRACT_DATES) {
-            const originalDate = account.attributes[date]
-            let newDate
-            try {
-                newDate = parse(originalDate, CREATE_DATE_FORMAT, new Date())
-            } catch (error) {
-                newDate = parse(originalDate, READ_DATE_FORMAT, new Date())
-            }
-            account.attributes[date] = newDate
-        }
-        delete account.GROUPS
-
-        return account
-    }
-
     const send = async <T>(res: Response<T>, output: T) => {
         logger.info(output)
         res.send(output)
+    }
+
+    const fetchGroupIds = async (identity: string): Promise<string[]> => {
+        const response = await client.getGroupMembership(identity)
+        return (response.data.groups || []).map(urlToID)
     }
 
     return createConnector()
@@ -97,23 +63,14 @@ export const connector = async () => {
             res.send({})
         })
         .stdAccountList(async (context: Context, input: StdAccountListInput, res: Response<StdAccountListOutput>) => {
-            const interval = setInterval(() => {
-                res.keepAlive()
-            }, PROCESSINGWAIT)
-
-            const responses: Promise<any>[] = []
-            try {
+            await withKeepAlive(res, PROCESSINGWAIT, async () => {
                 const response = await client.listEmployees()
-
-                for (const rawAccount of response.data.records) {
-                    const account = buildAccount(rawAccount)
-                    responses.push(account)
-                    account.then((x) => send(res, x))
-                }
-            } finally {
-                await Promise.all(responses)
-                clearInterval(interval)
-            }
+                const records = response.data.records || []
+                await runWithConcurrency(records, LIST_CONCURRENCY, async (rawAccount) => {
+                    const account = await buildAccount(rawAccount, { fetchGroupIds })
+                    await send(res, account)
+                })
+            })
         })
         .stdAccountRead(async (context: Context, input: StdAccountReadInput, res: Response<StdAccountReadOutput>) => {
             logger.info(input)
@@ -121,7 +78,7 @@ export const connector = async () => {
                 const response = await client.getAccount(input.identity)
 
                 const rawAccount = response.data
-                const account = await buildAccount(rawAccount)
+                const account = await buildAccount(rawAccount, { fetchGroupIds })
                 logger.info(account)
                 res.send(account)
             } catch (error) {
@@ -132,7 +89,7 @@ export const connector = async () => {
             async (context: Context, input: StdAccountCreateInput, res: Response<StdAccountCreateOutput>) => {
                 logger.info(input)
                 const groups = [].concat(input.attributes.GROUPS)
-                const employee = processInput(input.attributes)
+                const employee = processAccountInput(input.attributes)
 
                 let response = await client.createAccount(employee)
                 const HREF: string = response.data.HREF
@@ -147,7 +104,7 @@ export const connector = async () => {
                 response = await client.getAccount(EMPLOYEE_ID)
 
                 const rawAccount = response.data
-                const account = await buildAccount(rawAccount)
+                const account = await buildAccount(rawAccount, { fetchGroupIds })
 
                 logger.info(account)
                 res.send(account)
@@ -195,7 +152,7 @@ export const connector = async () => {
                 const response = await client.getAccount(input.identity)
 
                 const rawAccount = response.data
-                const account = await buildAccount(rawAccount)
+                const account = await buildAccount(rawAccount, { fetchGroupIds })
 
                 logger.info(account)
                 res.send(account)
@@ -217,7 +174,7 @@ export const connector = async () => {
                 response = await client.getAccount(input.identity)
 
                 const rawAccount = response.data
-                const account = await buildAccount(rawAccount)
+                const account = await buildAccount(rawAccount, { fetchGroupIds })
 
                 logger.info(account)
                 res.send(account)
@@ -235,7 +192,7 @@ export const connector = async () => {
                 response = await client.getAccount(input.identity)
 
                 const rawAccount = response.data
-                const account = await buildAccount(rawAccount)
+                const account = await buildAccount(rawAccount, { fetchGroupIds })
 
                 logger.info(account)
                 res.send(account)
