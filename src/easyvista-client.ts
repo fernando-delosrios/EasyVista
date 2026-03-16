@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosResponse, AxiosInstance } from 'axios'
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import axiosThrottle from 'axios-request-throttle'
 import axiosRetry from 'axios-retry'
 import { retriesConfig, throttleConfig } from './axios'
@@ -24,8 +24,9 @@ export class EasyVistaClient {
             }
         }
         const client = axios.create(baseConfig)
-        axiosRetry(client, retriesConfig)
-        axiosThrottle.use(client, throttleConfig)
+        // Some axios middleware packages ship incompatible type declarations.
+        axiosRetry(client as any, retriesConfig as any)
+        axiosThrottle.use(client as any, throttleConfig as any)
         this.client = setupCache(client)
         this.search = config.search
     }
