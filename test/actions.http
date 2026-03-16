@@ -1,0 +1,147 @@
+@url = http://localhost:3000
+###
+# Test connection
+POST {{url}}
+Content-Type: application/json
+
+{
+  "type": "std:test-connection",
+  "input": {},
+  "config": {{config}}
+}
+
+HTTP/1.1 200  - OK
+x-powered-by: Express
+content-type: application/x-ndjson
+date: Sat, 30 Nov 2024 16:05:17 GMT
+connection: close
+transfer-encoding: chunked
+###
+# Discover schema
+POST {{url}}
+Content-Type: application/json
+
+{
+  "type": "std:account:discover-schema",
+  "input": {},
+  "config": {{config}}
+}
+###
+# Account list
+POST {{url}}
+Content-Type: application/json
+
+{
+  "type": "std:account:list",
+  "input": {},
+  "config": {{config}}
+}
+###
+# Account read
+POST {{url}}
+Content-Type: application/json
+
+{
+  "type": "std:account:read",
+  "input": {
+    "identity": "19241"
+  },
+  "config": {{config}}
+}
+
+HTTP/1.1 200  - OK
+x-powered-by: Express
+content-type: application/x-ndjson
+date: Thu, 19 Dec 2024 17:23:42 GMT
+connection: close
+transfer-encoding: chunked
+###
+# Entitlement list
+POST {{url}}
+Content-Type: application/json
+
+{
+  "type": "std:entitlement:list",
+  "input": {},
+  "config": {{config}}
+}
+
+HTTP/1.1 200  - OK
+x-powered-by: Express
+content-type: application/x-ndjson
+date: Thu, 19 Dec 2024 08:39:17 GMT
+connection: close
+transfer-encoding: chunked
+###
+# Entitlement read
+POST {{url}}
+Content-Type: application/json
+
+{
+  "type": "std:entitlement:read",
+  "input": {
+        "identity": "fc16aee3-0359-4d46-b746-b36459211660"
+    },
+  "config": {{config}}
+}
+###
+# Account disable
+POST {{url}}
+Content-Type: application/json
+
+{
+  "type": "std:account:disable",
+  "input": {
+    "identity": "993",
+    "key": { "simple": { "id": "993" } }
+  },
+"config": {{config}}
+}
+###
+# Account enable
+POST {{url}}
+Content-Type: application/json
+
+{
+  "type": "std:account:enable",
+  "input": {
+    "identity": "993"
+  },
+  "config": {{config}}
+}
+###
+# Account update
+POST {{url}}
+Content-Type: application/json
+
+{
+  "type": "std:account:update",
+  "input": {"changes":[{"attribute":"PROFIL_ID","op":"Add","value":"10"}], "identity": "19241"},
+  "config": {{config}}
+}
+###
+# Account create
+POST {{url}}
+Content-Type: application/json
+
+{
+  "type": "std:account:create",
+  "input": {"attributes":{
+            "BEGIN_OF_CONTRACT": "2023-06-29T22:00:00Z",
+            "END_OF_CONTRACT": "2025-07-04T22:00:00Z",
+            "E_MAIL": "anne.legrand@sailpointdemo.com",
+            "GROUPS": "63",
+            "IDENTIFICATION": "anne.legrand",
+            "LAST_NAME": "anne.legrand",
+            "LOGIN": "anne.legrand",
+            "PROFIL_ID": "5"
+          }},
+  "config": {{config}}
+}
+
+HTTP/1.1 500  - Internal Server Error
+x-powered-by: Express
+content-type: application/x-ndjson
+date: Thu, 19 Dec 2024 17:42:28 GMT
+connection: close
+transfer-encoding: chunked

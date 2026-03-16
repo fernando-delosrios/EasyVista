@@ -1,0 +1,162 @@
+{
+    "environments": {
+        "fernando": {
+            "config": {
+                "nerm_token": "5ccd3dd306354f45ac596f93df437d17",
+                "isc_baseurl": "https://company12926-poc.api.identitynow-demo.com",
+                "isc_clientId": "069eefc1eab4415eb7fdf1e4837c5536",
+                "isc_clientSecret": "e5442cf0ad84b865b03fe6c8feb6c0e9a24fc1e8f4cb4435c5593cb8c86e6368",
+                "healthCheckTimeout": 30,
+                "spConnectorSupportsCustomSchemas": true,
+                "idnProxyType": "sp-connect",
+                "account_type": "Profile",
+                "workflows": null,
+                "connectionType": "direct",
+                "spConnectorInstanceId": "290207d3-5073-4846-bfb5-38a3903b30df",
+                "profile_name": "Assignments",
+                "nerm_baseurl": "https://company12926-poc.mynonemployee.com/api",
+                "operations": [
+                    {
+                        "wait": false,
+                        "workflow": "c5c89552-805b-41f3-bb32-d24e92b33349",
+                        "name": "End Assignment",
+                        "operation": "disable",
+                        "requester_id": "sponsor_user_id"
+                    }
+                ],
+                "deltaAggregation": null,
+                "cloudExternalId": "ccDecommissionId",
+                "login_attribute": null,
+                "spConnDebugLoggingEnabled": true,
+                "spConnectorSpecId": "05974f75-5355-412d-8354-9d91288d3eda",
+                "deleteThresholdPercentage": 10,
+                "profiles": [
+                    {
+                        "name": "Locations",
+                        "attribute": "assignment_alternate_locations",
+                        "attributes": ["city", "country", "location_code", "location_description"]
+                    }
+                ],
+                "slpt-source-diagnostics": "{\"connector\":\"05974f75-5355-412d-8354-9d91288d3eda\",\"status\":\"SOURCE_STATE_HEALTHY\",\"healthy\":true,\"healthcheckDisabled\":false,\"healthcheckCount\":11,\"lastHealthcheck\":1734355597386,\"statusChanged\":1734091350830}",
+                "formPath": null,
+                "cloudCacheUpdate": 1734353299251,
+                "templateApplication": "Non-Employee Risk Management+ (tag: latest)",
+                "healthy": true,
+                "cloudDisplayName": "Non-Employee Risk Management+ Assignments",
+                "connectorName": "Non-Employee Risk Management+ (tag: latest)",
+                "nerm_admin": "fernando.delosrios",
+                "beforeProvisioningRule": null,
+                "since": "2024-12-13T12:02:30.830Z",
+                "status": "SOURCE_STATE_HEALTHY"
+            },
+            "schema": {
+                "nativeObjectType": "User",
+                "identityAttribute": "id",
+                "displayAttribute": "id",
+                "hierarchyAttribute": null,
+                "includePermissions": false,
+                "features": [],
+                "configuration": {},
+                "attributes": [
+                    {
+                        "name": "id",
+                        "type": "STRING",
+                        "schema": null,
+                        "description": "ID",
+                        "isMulti": false,
+                        "isEntitlement": false,
+                        "isGroup": false
+                    },
+                    {
+                        "name": "assignment_id",
+                        "type": "STRING",
+                        "schema": null,
+                        "description": "assignment_id",
+                        "isMulti": false,
+                        "isEntitlement": false,
+                        "isGroup": false
+                    },
+                    {
+                        "name": "assignment_location.location_name",
+                        "type": "STRING",
+                        "schema": null,
+                        "description": "assignment_location.location_name",
+                        "isMulti": false,
+                        "isEntitlement": false,
+                        "isGroup": false
+                    },
+                    {
+                        "name": "assignment_organization",
+                        "type": "STRING",
+                        "schema": {
+                            "type": "CONNECTOR_SCHEMA",
+                            "id": "4fd85e2f68354f9f8edc753252dfc0f2",
+                            "name": "Organizations"
+                        },
+                        "description": "assignment_organization",
+                        "isMulti": false,
+                        "isEntitlement": true,
+                        "isGroup": true
+                    },
+                    {
+                        "name": "assignment_person",
+                        "type": "STRING",
+                        "schema": {
+                            "type": "CONNECTOR_SCHEMA",
+                            "id": "ad42ddc5d5d540bdb8c41a4f31830046",
+                            "name": "People"
+                        },
+                        "description": "assignment_person",
+                        "isMulti": true,
+                        "isEntitlement": true,
+                        "isGroup": true
+                    },
+                    {
+                        "name": "assignment_organization.organization_populations",
+                        "type": "STRING",
+                        "schema": null,
+                        "description": "assignment_organization.organization_populations",
+                        "isMulti": true,
+                        "isEntitlement": false,
+                        "isGroup": false
+                    }
+                ],
+                "id": "98dc1ff7054a47378a2516973d7f3265",
+                "name": "account",
+                "created": "2024-11-28T10:23:09.025Z",
+                "modified": "2024-11-30T17:06:11.896Z"
+            }
+        },
+        "olivier": {
+            "config": {
+                "healthCheckTimeout": 30,
+                "idnProxyType": "sp-connect",
+                "auth": "auth.token",
+                "language": "FR",
+                "connectionType": "direct",
+                "spConnectorInstanceId": "35e72fe3-0c85-4dfc-a2b1-09424d2e98ec",
+                "search": null,
+                "recommendationStatus": null,
+                "basic.username": null,
+                "deltaAggregation": null,
+                "cloudExternalId": "ccDecommissionId",
+                "sourceConnected": true,
+                "spConnectorSpecId": "0594d328-d586-4e40-afe3-0f07ec12117c",
+                "deleteThresholdPercentage": 10,
+                "url": "https://dev-fr-external-integration-01.easyvista-training.com/api/v1/50006",
+                "slpt-source-diagnostics": "{\"connector\":\"0594d328-d586-4e40-afe3-0f07ec12117c\",\"status\":\"SOURCE_STATE_HEALTHY\",\"healthy\":true,\"healthcheckDisabled\":false,\"healthcheckCount\":39,\"lastHealthcheck\":1734579314372,\"statusChanged\":1733513532331}",
+                "formPath": null,
+                "cloudCacheUpdate": 1734535180523,
+                "templateApplication": "EasyVista (tag: latest)",
+                "healthy": true,
+                "basic.password": null,
+                "cloudDisplayName": "EasyVista - Saas",
+                "connectorName": "EasyVista (tag: latest)",
+                "beforeProvisioningRule": null,
+                "since": "2024-12-06T19:32:12.331Z",
+                "status": "SOURCE_STATE_HEALTHY",
+                "token.value": "f3132acafca53d72ca20da7f08a455eae381e75b6370b945f57c9b31fa2e1787"
+            }
+        }
+    }
+}
